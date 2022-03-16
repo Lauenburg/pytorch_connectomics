@@ -293,10 +293,10 @@ def get_dataset(cfg,
         if cfg.MODEL.TARGET_OPT_MULTISEG_SPLIT is not None:
             shared_kwargs['multiseg_split'] = cfg.MODEL.TARGET_OPT_MULTISEG_SPLIT
 
-        if cfg.DATA.LABEL_TYPE is not None:
+        if cfg.DATASET.LABEL_TYPE is not None:
             # overwrite the shared argument dictionary  
             shared_kwargs = {
-                "label_type": cfg.DATA.LABEL_TYPE,
+                "label_type": cfg.DATASET.LABEL_TYPE,
                 "sample_size": sample_volume_size,
                 "augmentor": augmentor,
                 "weight_opt": wopt,
