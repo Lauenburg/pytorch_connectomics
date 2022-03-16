@@ -117,6 +117,9 @@ _C.MODEL.AUX_OUT = False
 # -----------------------------------------------------------------------------
 _C.DATASET = CN()
 
+# Type of the labels: seg | syn; defaults to seg
+_C.DATASET.LABEL_TYPE = None
+
 # Scale ratio of the input data for different resolutions.
 # Using a DATA_SCALE of [1., 0.5, 0.5] will downsample the
 # original image by two times (e.g., 4nm -> 8nm).

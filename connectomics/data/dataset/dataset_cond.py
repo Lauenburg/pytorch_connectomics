@@ -10,6 +10,8 @@ from ..augmentation import Compose
 from ..utils import *
 
 AUGMENTOR_TYPE = Optional[Compose]
+WEIGHT_OPT_TYPE = List[List[str]]
+
 
 class VolumeDatasetCond(torch.utils.data.Dataset):
     """
@@ -34,6 +36,7 @@ class VolumeDatasetCond(torch.utils.data.Dataset):
                  label_type: str = 'seg',
                  augmentor: AUGMENTOR_TYPE = None,
                  sample_size: tuple = (9, 65, 65),
+                 weight_opt: WEIGHT_OPT_TYPE = [['1']],
                  mode: str = 'train',
                  iter_num: int = -1,
                  # normalization
@@ -43,6 +46,8 @@ class VolumeDatasetCond(torch.utils.data.Dataset):
         assert mode in ['train', 'val', 'test']
         self.mode = mode
 
+        self.weight_opt = weight_opt
+        
         assert label_type in ['seg', 'syn']
         self.label_type = label_type
 
@@ -85,7 +90,7 @@ class VolumeDatasetCond(torch.utils.data.Dataset):
             pos = (vol_id,) + tuple(bbox)
             out_volume = self.prepare_volume(crop_box, vol_id)
             out_target = self.prepare_label(crop_box, vol_id, box_id)
-            out_weight = self.prepare_weight(out_target)
+            out_weight = seg_to_weights(out_target, self.weight_opt)
             return pos, out_volume, out_target, out_weight
 
         elif self.mode == 'test':
@@ -112,10 +117,6 @@ class VolumeDatasetCond(torch.utils.data.Dataset):
         label = label * gating_mask
         return [seg2polarity(label)]
 
-    def prepare_weight(self, _):
-        # weight is a list of list to be consistent with VolumeDataset
-        foo = np.zeros((1), int)
-        return [[foo]]
 
     def crop_with_box(self, box, vol, constant_values = 0):
         # crop with given box (needs padding if touch boundary)

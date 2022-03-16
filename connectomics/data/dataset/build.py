@@ -292,7 +292,22 @@ def get_dataset(cfg,
 
         if cfg.MODEL.TARGET_OPT_MULTISEG_SPLIT is not None:
             shared_kwargs['multiseg_split'] = cfg.MODEL.TARGET_OPT_MULTISEG_SPLIT
-        dataset = dataset_class(volume=volume, label=label, valid_mask=valid_mask,
+
+        if cfg.DATA.LABEL_TYPE is not None:
+            # overwrite the shared argument dictionary  
+            shared_kwargs = {
+                "label_type": cfg.DATA.LABEL_TYPE,
+                "sample_size": sample_volume_size,
+                "augmentor": augmentor,
+                "weight_opt": wopt,
+                "mode": mode,
+                "data_mean": cfg.DATASET.MEAN,
+                "data_std": cfg.DATASET.STD,
+            }
+        else:
+            shared_kwargs['valid_mask'] = valid_mask
+
+        dataset = dataset_class(volume=volume, label=label,
                                 iter_num=iter_num, **shared_kwargs)
 
     return dataset

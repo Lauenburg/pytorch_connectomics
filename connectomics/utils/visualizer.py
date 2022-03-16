@@ -80,7 +80,7 @@ class Visualizer(object):
 
         for name in image_groups.keys():
             image_list = image_groups[name]
-            image_list = [self._denormalize(x) for x in image_list]
+            image_list = [self._denormalize(x) if x.shape[1] <= 3 else self._denormalize(x[:,:1,:,:]) for x in image_list]
             image_list = [self.permute_truncate(x, is_3d=True) for x in image_list]
             sz = image_list[0].size()
             canvas = [x.detach().cpu().expand(sz[0], 3, sz[2], sz[3]) for x in image_list]
@@ -96,7 +96,7 @@ class Visualizer(object):
             volume, label, output, weight_maps)
         sz = volume.size()  # z,c,y,x
         canvas = []
-        volume_visual = volume.detach().cpu().expand(sz[0], 3, sz[2], sz[3])
+        volume_visual = volume.detach().cpu().expand(sz[0], 3, sz[2], sz[3]) if volume.shape[1] <= 3 else volume[:,:1,:,:].detach().cpu().expand(sz[0], 3, sz[2], sz[3])
         canvas.append(volume_visual)
 
         def maybe2rgb(temp):
