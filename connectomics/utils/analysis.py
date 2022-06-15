@@ -53,6 +53,8 @@ def distance_nn(target: np.ndarray, ds_name: str = 'main',
     cm = center_of_mass(binary, target, list(np.unique(target))[1:])
     cm = np.array(cm) * np.array(resolution)[None, :]
 
+    # NN distance calculation based on scipys KDTree function
+    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html
     kd_tree = KDTree(cm)
     distance, _ = kd_tree.query(cm, k=2)
     distance = np.array(distance)[:,1]
